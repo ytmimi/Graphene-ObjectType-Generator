@@ -1,0 +1,2 @@
+def resolve_{{attribute_name}}(self, info, *args, **kwargs):
+  pass
