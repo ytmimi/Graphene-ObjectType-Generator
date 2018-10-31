@@ -1,16 +1,4 @@
-{{attr}} = graphene.List({{type}},
-    {%- if alt_name or description or required or default_value %}
-    {%- if alt_name %}
-    name = '{{alt_name}}',
-    {%- endif -%}
-    {%- if description %}
-    description = '{{description}}',
-    {%- endif -%}
-    {%- if required %}
-    required = True,
-    {%- endif -%}
-    {%- if default_value %}
-    default_value = {{default_value}},
-    {%- endif %}
-    {% endif -%}
-)
+{%- extends 'scalar.txt' -%}
+{% block field_block -%}
+graphene.List({{type}},
+{%- endblock field_block %}
