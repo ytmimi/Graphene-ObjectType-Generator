@@ -6,3 +6,8 @@ class {{class_name}}(graphene.ObjectType):
     {%- else %}
     pass
     {%- endif %}
+    {% if resolvers %}
+    {%- for resolver in resolvers %}
+    {{resolver}}
+    {%- endfor -%}
+    {%- endif %}
