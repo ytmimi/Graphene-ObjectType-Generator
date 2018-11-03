@@ -1,0 +1,16 @@
+class {{class_name}}(graphene.ObjectType):
+{%- if fields %}
+{%- for field in fields %}
+{{field|indent(4, True)}}
+{%- endfor %}
+{%- else %}
+{{'pass'|indent(4, True)}}
+{%- endif -%}
+{%- if resolvers %}
+
+
+{% for resolver in resolvers -%}
+{{resolver|indent(4, True)}}
+
+{% endfor %}
+{%- endif %}
