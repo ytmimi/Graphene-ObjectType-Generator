@@ -1,4 +1,4 @@
-{%- extends 'scalar.txt' -%}
+{%- extends 'Scalar.txt' -%}
 {% block field_block -%}
 graphene.Field({{type}},
 {%- endblock field_block %}
