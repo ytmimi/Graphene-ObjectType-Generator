@@ -1,3 +1,4 @@
 .env
+*.egg*
 __pycache__
 .cache/
