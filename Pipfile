@@ -4,11 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests-html = "*"
-"jinja2" = "*"
+"e1839a8" = {path = ".", editable = true}
 
 [dev-packages]
 pytest = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.6"
