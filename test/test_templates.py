@@ -122,4 +122,58 @@ def test_graphene_field(object_list, attribute):
         assert templates.graphene_field(attribute, type_) == expected[index]
 
 
-# add Tests for ObjectTypes
+@pytest.fixture(scope='module')
+def fields():
+    return [
+        templates.graphene_scalar('some_string', 'str'),
+        templates.graphene_scalar('some_int', 'int'),
+        templates.graphene_scalar('some_float', 'float'),
+    ]
+
+@pytest.fixture(scope='module')
+def resolvers():
+    return [
+        templates.resolver('some_string'),
+        templates.resolver('some_int'),
+        templates.resolver('some_float'),
+    ]
+
+# add Tests or ObjectTypes
+class TestObjectTypeTemplate:
+    def test_only_class_name(self, assert_template):
+        result = templates.objecttype('Random')
+        expected = ('''
+        class Random(graphene.ObjectType):
+            pass
+        ''').strip()
+        assert_template(result, expected)
+
+    def test_with_fields(self, assert_template, fields):
+        result = templates.objecttype('Random', fields)
+        expected = ('''
+        class Random(graphene.ObjectType):
+            some_string = graphene.String()
+            some_int = graphene.Int()
+            some_float = graphene.Float()
+        ''').strip()
+        assert_template(result, expected)
+
+    def test_with_fields_and_resolvers(self, assert_template, fields, resolvers):
+        result = templates.objecttype('Random', fields, resolvers)
+        expected = ('''
+        class Random(graphene.ObjectType):
+            some_string = graphene.String()
+            some_int = graphene.Int()
+            some_float = graphene.Float()
+
+
+            def resolve_some_string(self, info, *args, **kwargs):
+                pass
+
+            def resolve_some_int(self, info, *args, **kwargs):
+                pass
+
+            def resolve_some_float(self, info, *args, **kwargs):
+                pass
+        ''').strip()
+        assert_template(result, expected)
