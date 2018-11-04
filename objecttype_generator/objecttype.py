@@ -1,5 +1,5 @@
 import json
-from templates import graphene_scalar, graphene_list, graphene_field, resolver, objecttype
+from .templates import graphene_scalar, graphene_list, graphene_field, resolver, objecttype
 
 def _inspect_type(obj):
     '''Returns the name of a Python object:
