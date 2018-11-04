@@ -88,12 +88,13 @@ def from_list(attr_name, data_list=[], **kwargs):
     return: a list
     '''
     #initialize a list with the field and resolver
-    fields = [type_from_obj(attr_name, data_list, **kwargs)]
-    resolvers = [resolver_func(attr_name)]
+    fields = [_type_from_obj(attr_name, data_list, **kwargs)]
+    resolvers = [resolver(attr_name)]
     object_types = []
     new_class_name = class_from_attr(attr_name)
     #recursively go through the dict looking all objectTypes
-    object_types += from_dict(new_class_name, data_list[0], **kwargs)
+    if len(data_list) > 0 and isinstance(data_list[0], dict):
+        object_types += from_dict(new_class_name, data_list[0], **kwargs)
     object_types.append(objecttype('Query', fields, resolvers))
     return object_types
 
