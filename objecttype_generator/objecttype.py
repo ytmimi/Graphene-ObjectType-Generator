@@ -66,7 +66,7 @@ def from_dict(class_name, data_dict={}, **kwargs):
         if inspect_type(value) == 'list' and len(value) > 0 and inspect_type(value[0]) == 'dict':
             object_types += recursive_call(attr_name, value[0], **kwargs)
         elif inspect_type(value) == 'list' and (len(value) == 0 or inspect_type(value[0]) != 'dict'):
-            resolvers.append(resolver_func(attr_name))
+            resolvers.append(resolver(attr_name))
 
     object_types.append(objecttype(class_name, fields, resolvers))
     return object_types
