@@ -1,31 +1,26 @@
 import json
+from .settings import class_from_attr, inspect_type, UNKNOWN_TYPE
 from .templates import graphene_scalar, graphene_list, graphene_field, resolver, objecttype
 
-def _inspect_type(obj):
-    '''Returns the name of a Python object:
-        ex) an int returns 'int' and a string returns 'str'
-    '''
-    return type(obj).__name__
-
-def _check_list(attr_name, obj):
-    #check taht we don't get back an empty list
+def _check_list(attr_name, obj, **kwargs):
+    '''Checks if the passed in list is empty or not'''
     if len(obj) > 0:
         list_type = inspect_type(obj[0])
         if list_type == 'dict':
             #if list_type is a dict then we update list_type before using it in the function
-            list_type = f'{attr_name.title()}Type'
-        return graphene_list(attr_name, list_type, **kwargs.get(attr_name, {}))
-    #else: return a list with an 'UnknownType'
+            list_type = class_from_attr(attr_name)
+        return graphene_list(attr_name, list_type, **kwargs)
     else:
-        return graphene_list(attr_name, 'UnknowType', **kwargs.get(attr_name, {}))
+        kwargs['description'] = f'Received an empty list for field: {attr_name}.'
+        return graphene_list(attr_name, UNKNOWN_TYPE, **kwargs)
 
-def _check_dict(attr_name, obj):
-    return graphene_field(
-        attr_name,
-        f'{attr_name.title()}Type',
-        **kwargs.get(attr_name, {})
-    )
-
+def _check_dict(attr_name, obj, **kwargs):
+    '''Checks if the passed in dict is empty or not'''
+    if len(obj.keys()) > 0:
+        return graphene_field(attr_name, class_from_attr(attr_name), **kwargs)
+    else:
+        kwargs['description'] = f'Received an empty dictionary for field: {attr_name}.'
+        return graphene_field(attr_name, UNKNOWN_TYPE, **kwargs)
 
 def _type_from_obj(attr_name, obj, **kwargs):
     '''
@@ -35,14 +30,14 @@ def _type_from_obj(attr_name, obj, **kwargs):
             and the value is a nested dictionary containing the kwargs for the
             render_template function: alt_name, description, required, default_value
     '''
+    filtered_kwargs = kwargs.get(attr_name, {})
     type_ = inspect_type(obj)
     if type_ == 'list':
-        return _check_list()
+        return _check_list(attr_name, obj, **filtered_kwargs)
     elif type_  == 'dict':
-        return _check_dict(attr_name)
-
+        return _check_dict(attr_name, obj, **filtered_kwargs)
     else:
-        return scalar(attr_name, type_, **kwargs.get(attr_name, {}))
+        return graphene_scalar(attr_name, type_, **filtered_kwargs)
 
 
 def from_dict(class_name, data_dict={}, **kwargs):
@@ -58,14 +53,12 @@ def from_dict(class_name, data_dict={}, **kwargs):
     resolvers = []
     object_types = []
     def recursive_call(attr_name, value, **kwargs):
-        resolvers.append(resolver_func(attr_name))
-        new_class_name = f'{attr_name.title()}Type'
-        # print(new_class_name, value)
-        return objectTypes_from_dict(new_class_name, value, **kwargs.get(new_class_name, {}))
+        resolvers.append(resolver(attr_name))
+        return from_dict(class_from_attr(attr_name), value, **kwargs)
 
     for attr_name, value in data_dict.items():
         #every attr_name is associated with a field
-        fields.append(type_from_obj(attr_name, value, **kwargs))
+        fields.append(_type_from_obj(attr_name, value, **kwargs))
         #if the field is a dict that means that there are subfield and
         #another objectType should be created
         if inspect_type(value) == 'dict':
@@ -75,8 +68,7 @@ def from_dict(class_name, data_dict={}, **kwargs):
         elif inspect_type(value) == 'list' and (len(value) == 0 or inspect_type(value[0]) != 'dict'):
             resolvers.append(resolver_func(attr_name))
 
-
-    object_types.append(create_objectType(class_name, fields, resolvers))
+    object_types.append(objecttype(class_name, fields, resolvers))
     return object_types
 
 
@@ -95,15 +87,14 @@ def from_list(attr_name, data_list=[], **kwargs):
     last is a Query object with one filed being the attr_name
     return: a list
     '''
-    fields = []
-    fields.append(type_from_obj(attr_name, data_list, **kwargs))
-    resolvers = []
-    resolvers.append(resolver_func(attr_name))
+    #initialize a list with the field and resolver
+    fields = [type_from_obj(attr_name, data_list, **kwargs)]
+    resolvers = [resolver_func(attr_name)]
     object_types = []
-    new_class_name = f'{attr_name.title()}Type'
+    new_class_name = class_from_attr(attr_name)
     #recursively go through the dict looking all objectTypes
-    object_types += objectTypes_from_dict(new_class_name, data_list[0], **kwargs)
-    object_types.append(create_objectType('Query', fields, resolvers))
+    object_types += from_dict(new_class_name, data_list[0], **kwargs)
+    object_types.append(objecttype('Query', fields, resolvers))
     return object_types
 
 def from_json(class_name, json_str, **kwargs):
@@ -113,12 +104,10 @@ def from_json(class_name, json_str, **kwargs):
     kwargs: additional paramerter to pass to the object creation files
     return a list of strings
     '''
-    try:
-        data = json.loads(json_str)
-        if isinstance(data, dict):
-            return objectTypes_from_dict(class_name, data, **kwargs)
-        if isinstance(data, list):
-            attr_name = class_name.lower().replace('type', '')
-            return objectTypes_from_list(attr_name, data, **kwargs)
-    except Exception as e:
-        raise json.JSONDecodeError('Can\'t convert string to a list or dict')
+    data = json.loads(json_str)
+    if isinstance(data, dict):
+        return from_dict(class_name, data, **kwargs)
+    if isinstance(data, list):
+        attr_name = class_name.lower().replace('type', '')
+        return from_list(attr_name, data, **kwargs)
+    raise json.JSONDecodeError('Can\'t convert JSON string to a list or a dict')
