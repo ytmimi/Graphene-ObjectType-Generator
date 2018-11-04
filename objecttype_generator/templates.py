@@ -42,7 +42,7 @@ def objecttype(class_name, fields=None, resolvers=None):
     fields: a list of formated strings representing graphene scalars, lists, and field types
     resolvers: a list of formated strings, representing resolver functions
     '''
-    template = ENV.get_template('graphene_objectType.txt')
+    template = ENV.get_template('ObjectType.txt')
     return template.render(
         class_name=class_name,
         fields=fields,
