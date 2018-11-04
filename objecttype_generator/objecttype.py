@@ -25,7 +25,7 @@ def _check_dict(attr_name, obj, **kwargs):
 def _type_from_obj(attr_name, obj, **kwargs):
     '''
     attr_name: name for the objectType field
-    obj: example object that represents the type to expect for the field
+    obj: A Python primative, list, dict, date, datetime, or time object
     kwargs: a dictionary, where the key is the attr_name passed into the function,
             and the value is a nested dictionary containing the kwargs for the
             render_template function: alt_name, description, required, default_value
@@ -36,6 +36,9 @@ def _type_from_obj(attr_name, obj, **kwargs):
         return _check_list(attr_name, obj, **filtered_kwargs)
     elif type_  == 'dict':
         return _check_dict(attr_name, obj, **filtered_kwargs)
+    elif type_ == 'NoneType':
+        filtered_kwargs['description'] = f'Received a None value for field: {attr_name}.'
+        return graphene_field(attr_name, UNKNOWN_TYPE, **filtered_kwargs)
     else:
         return graphene_scalar(attr_name, type_, **filtered_kwargs)
 
@@ -77,7 +80,7 @@ def from_dict(class_name, data_dict={}, **kwargs):
 #we need test that include empty dicts
 
 
-def from_list(attr_name, data_list=[], **kwargs):
+def from_list(attr_name, data_list=[], class_name='Query', **kwargs):
     '''
     attr_name: name of the attribute to use in the object type created
     data_list: a list of dictionarys
@@ -95,7 +98,7 @@ def from_list(attr_name, data_list=[], **kwargs):
     #recursively go through the dict looking all objectTypes
     if len(data_list) > 0 and isinstance(data_list[0], dict):
         object_types += from_dict(new_class_name, data_list[0], **kwargs)
-    object_types.append(objecttype('Query', fields, resolvers))
+    object_types.append(objecttype(class_name, fields, resolvers))
     return object_types
 
 def from_json(class_name, json_str, **kwargs):
