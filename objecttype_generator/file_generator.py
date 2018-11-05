@@ -14,8 +14,8 @@ def to_py_file(full_file_name, objecttype, mode='w', include_imports=True, impor
         and need not be included in import_list.
     '''
     #check mode
-    if mode != 'w' or mode != 'a':
-        raise ValueError('Mode must be set either a or w.')
+    if mode != 'w' and mode != 'a':
+        raise ValueError('Mode must be set to either a or w.')
     # check imports for graphene
     if include_imports and 'import graphene' not in import_list:
         import_list = ['import graphene'] + import_list
@@ -24,7 +24,7 @@ def to_py_file(full_file_name, objecttype, mode='w', include_imports=True, impor
         raise ValueError('Please supply the path to a .py file.')
 
     with open(full_file_name, mode) as f:
-        if mode == 'w' and imports:
+        if mode == 'w' and include_imports:
             f.write(add_imports(*import_list))
             f.write('\n\n')
         for object in objecttype:
