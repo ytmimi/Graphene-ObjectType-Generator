@@ -6,7 +6,7 @@ Quickly generate Graphene ObjectType definitions from dictionaries, lists, or JS
 ___
 
 ## Basics
-The three main functions in this library are `from_dict`, `from_list`, and `from_json`. Each Returns a lists containing strings that define one or many Graphene ObjectType definitions.
+The three main functions in this library are `from_dict`, `from_list`, and `from_json`. Each Returns a lists containing strings that define one or more Graphene ObjectType definitions.
 
 ##### Dictionaries
 
@@ -25,7 +25,7 @@ class PersonType(graphene.ObjectType):
 In the example above, only one list item was returned. Keep in mind that the ObjectType definition is just a string. Each key in the person dictionary became a field of the string representing the PersonType class. Also note that the appropriate Graphene Scalar was automatically assigned to each field.
 
 ##### Lists
-Generating an ObjectType definition from a list is similar. You use the `from_list` function passing in the attribute name, a list containing your data, and an optional class name. By default, the class name is 'Query'.
+Generating an ObjectType definition from a list is similar. To use the `from_list` function pass in the attribute name, a list containing your data, and an optional class name. By default, the class name is 'Query'.
 ```Python
 >>> from objecttype_generator import from_list
 >>> numbers = [1, 2, 3, 4, 5]
@@ -72,7 +72,7 @@ class CompanyType(graphene.ObjectType):
 ```
 
 ##### Writing to Files
-Obviously, printing out ObjectType definitions can only get you so far. `to_py_file` is a convenience function provided to write ObjectType definitions to files. `to_py_file` takes two positional arguments: the full path to a .py file and a list of ObjetType definitions. Lets reuse the dictionary example from above.
+Obviously, printing out ObjectType definitions can only get you so far. `to_py_file` is a convenient function provided to write ObjectType definitions to files. `to_py_file` takes two positional arguments: the full path to a `.py` file and a list of ObjetType definitions. Lets reuse the dictionary example from before.
 ```Python
 >>> import os
 >>> from objecttype_generator import from_dict
