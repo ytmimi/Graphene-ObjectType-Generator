@@ -86,6 +86,8 @@ Obviously, printing out ObjectType definitions can only get you so far. `to_py_f
 >>> with open(file) as f:
 ...     print(f.read())
 ...
+import graphene
+
 class PersonType(graphene.ObjectType):
     first_name = graphene.String()
     last_name = graphene.String()
@@ -93,6 +95,7 @@ class PersonType(graphene.ObjectType):
 
 
 ```
+In this example we created example.py in the current directory, and the file contais the ObjetType definition. By default, 'import graphene' will be prepended to the top of the file. If you don't want to include this import, you can pass `include_imports = False` to `to_py_file`. Additional imports can be specified as a list using the `import_list` kwarg.
 ___
 
 ## Additional Information
