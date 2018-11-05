@@ -11,7 +11,7 @@ def _check_list(attr_name, obj, **kwargs):
             list_type = class_from_attr(attr_name)
         return graphene_list(attr_name, list_type, **kwargs)
     else:
-        kwargs['description'] = f'Received an empty list for field: {attr_name}.'
+        kwargs['description'] = f'WARNING! Received an empty list for field: {attr_name}.'
         return graphene_list(attr_name, UNKNOWN_TYPE, **kwargs)
 
 def _check_dict(attr_name, obj, **kwargs):
@@ -19,12 +19,12 @@ def _check_dict(attr_name, obj, **kwargs):
     if len(obj.keys()) > 0:
         return graphene_field(attr_name, class_from_attr(attr_name), **kwargs)
     else:
-        kwargs['description'] = f'Received an empty dictionary for field: {attr_name}.'
+        kwargs['description'] = f'WARNING! Received an empty dictionary for field: {attr_name}.'
         return graphene_field(attr_name, UNKNOWN_TYPE, **kwargs)
 
 def _type_from_obj(attr_name, obj, **kwargs):
     '''
-    attr_name: name for the objectType field
+    attr_name: name for the ObjectType field
     obj: A Python primative, list, dict, date, datetime, or time object
     kwargs: a dictionary, where the key is the attr_name passed into the function,
             and the value is a nested dictionary containing the kwargs for the
@@ -37,7 +37,7 @@ def _type_from_obj(attr_name, obj, **kwargs):
     elif type_  == 'dict':
         return _check_dict(attr_name, obj, **filtered_kwargs)
     elif type_ == 'NoneType':
-        filtered_kwargs['description'] = f'Received a None value for field: {attr_name}.'
+        filtered_kwargs['description'] = f'WARNING! Received None for field: {attr_name}.'
         return graphene_field(attr_name, UNKNOWN_TYPE, **filtered_kwargs)
     else:
         return graphene_scalar(attr_name, type_, **filtered_kwargs)
@@ -45,7 +45,7 @@ def _type_from_obj(attr_name, obj, **kwargs):
 
 def from_dict(class_name, data_dict={}, **kwargs):
     '''
-    class_name: name of the objectType class
+    class_name: name of the ObjectType class
     data_dict: usually a dict from a json response
     this will loop through all the keys in a dictionary. If it encounters a nested dict,
     the function will recursivley call itself, and create an objectType class
