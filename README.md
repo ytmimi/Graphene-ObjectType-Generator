@@ -95,7 +95,7 @@ class PersonType(graphene.ObjectType):
 
 
 ```
-In this example we created example.py in the current directory, and the file contais the ObjetType definition. By default, 'import graphene' will be prepended to the top of the file. If you don't want to include this import, you can pass `include_imports = False` to `to_py_file`. Additional imports can be specified as a list using the `import_list` kwarg.
+In this example we created `example.py` in the current directory. The file contains the ObjetType definition. By default, 'import graphene' will be prepended to the top of the file. If you don't want to include this import, you can pass `include_imports = False` to `to_py_file`. Additional imports can be specified as a list using the `import_list` kwarg.
 ___
 
 ## Additional Information
@@ -129,7 +129,7 @@ class NestExample(graphene.ObjectType):
 
 
 ```
-Inspecting the output shows that 3 classes were created: DeepType, BaseType, and NestedExample. We only specified NestedExample. DeepType and BaseType were generated using the named of the field that they correspond to in title case followed by 'Type'. BaseType represents the first nested dictionary. The only key (deep) of the first nested dictionary matches the only field of BaseType. Similarly, DeepType represents the second nested dictionary. Again note that the second nested dictionary only contains one key (even_deeper), and DeepType's only field matches it exactly.
+Inspecting the output shows that 3 classes were created: DeepType, BaseType, and NestedExample. We only specified NestedExample. DeepType and BaseType were generated using the names of the field that they correspond to in title case followed by 'Type'. BaseType represents the first nested dictionary. The only key (deep) of the first nested dictionary matches the only field of BaseType. Similarly, DeepType represents the second nested dictionary. Again note that the second nested dictionary only contains one key (even_deeper), and DeepType's only field matches it exactly.
 
 ##### None, Empty Lists, and Empty Dictionaries
 In the event that None values, empty lists, or empty dictionaries are encountered while parsing data, a placeholder and warning description will be used. Here's an example of what you can expect to see.
@@ -163,7 +163,7 @@ class NoneExample(graphene.ObjectType):
 
 
 ```
-Each field above either returns an "UnknownType" or a list of "UnknownTypes". Note that "UnknownType" is never actually defined. Trying to use the auto-generated ObjectType definition as is would surly throw an error. To make it even more clear that something went wrong, a warning was added to the description of each field. If you encounter one of these don't panic, just double check your function inputs or manually assign these fields. You might find it odd that a placeholder ObjectType was not generated for none_field. Additional classes are only created if nested dictionaries are found. Because None was found, its unclear what the value of that field is supposed to be, and as a result, no placeholder ObjectType is generated.
+Each field above either returns an "UnknownType" or a list of "UnknownTypes". Note that "UnknownType" is never actually defined. Trying to use the auto-generated ObjectType definition as is, would surly throw an error. To make it even more clear that something went wrong, a warning was added to the description of each field. If you encounter one of these don't panic, just double check your function inputs or manually assign these fields. You might find it odd that a placeholder ObjectType was not generated for none_field. Additional classes are only created if nested dictionaries are found. Because None was found, its unclear what the value of that field is supposed to be, and as a result, no placeholder ObjectType is generated.
 
 ___
 This library is still under development.
